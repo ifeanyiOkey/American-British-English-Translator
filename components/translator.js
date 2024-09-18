@@ -7,7 +7,7 @@ class Translator {
   // Choose the correct dictionary based on locale
   translate(text, locale) {
     let translatedText = text;
-    let originalText = text;  // Save the original text for comparison
+    let originalText = text; // Save the original text for comparison
 
     // Helper function to translate based on dictionary and wrap with <span> tags
     const translateByDictionary = (str, dictionary) => {
@@ -27,6 +27,25 @@ class Translator {
       return str;
     };
 
+    // Helper function to handle time translation
+    const translateTime = (str, locality) => {
+      // Regex to detect time format (e.g., 10:30 or 10.30)
+      const americanTimeRegex = /(\b\d{1,2}):(\d{2}\b)/g;
+      const britishTimeRegex = /(\b\d{1,2})\.(\d{2}\b)/g;
+
+      if (locality === "american-to-british") {
+        return str.replace(americanTimeRegex, (match, hours, minutes) => {
+          return `<span class="highlight">${hours}.${minutes}</span>`;
+        });
+      } else if (locality === "british-to-american") {
+        return str.replace(britishTimeRegex, (match, hours, minutes) => {
+          return `<span class="highlight">${hours}:${minutes}</span>`;
+        });
+      }
+
+      return str;
+    };
+
     if (locale === "american-to-british") {
       translatedText = translateByDictionary(translatedText, americanOnly);
       translatedText = translateByDictionary(
@@ -37,6 +56,7 @@ class Translator {
         translatedText,
         americanToBritishTitles
       );
+      translatedText = translateTime(translatedText, locale)
     } else if (locale === "british-to-american") {
       translatedText = translateByDictionary(translatedText, britishOnly);
       // Use the reverseDictionary function to reverse spellings and titles
@@ -54,10 +74,11 @@ class Translator {
         translatedText,
         britishToAmericanTitles
       );
+      translatedText = translateTime(translatedText, locale);
     }
     // If no translation occurred, return the message
     if (translatedText === originalText) {
-      return 'Everything looks good to me!';
+      return "Everything looks good to me!";
     }
 
     return translatedText;
