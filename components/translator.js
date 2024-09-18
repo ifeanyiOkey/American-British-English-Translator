@@ -5,16 +5,15 @@ const britishOnly = require("./british-only.js");
 
 class Translator {
   // Choose the correct dictionary based on locale
-  translate(text, locale = "american-to-british") {
+  translate(text, locale) {
     let translatedText = text;
-    let hasTranslation = false; // Track if any translation occurs
+    let originalText = text;  // Save the original text for comparison
 
-    // Helper function to translate based on dictionary
+    // Helper function to translate based on dictionary and wrap with <span> tags
     const translateByDictionary = (str, dictionary) => {
       for (const [usWord, ukWord] of Object.entries(dictionary)) {
         const regex = new RegExp(`\\b${usWord}\\b`, "gi");
         str = str.replace(regex, (match) => {
-          hasTranslation = true; // Mark translation as true when a word is replaced
           // Preserve original casing (title case, all caps, etc.)
           const translatedWord =
             match.charAt(0).toUpperCase() === match.charAt(0)
@@ -40,6 +39,7 @@ class Translator {
       );
     } else if (locale === "british-to-american") {
       translatedText = translateByDictionary(translatedText, britishOnly);
+      // Use the reverseDictionary function to reverse spellings and titles
       const britishToAmericanSpelling = this.reverseDictionary(
         americanToBritishSpelling
       );
@@ -55,8 +55,8 @@ class Translator {
         britishToAmericanTitles
       );
     }
-    // If no translations were made, return false
-    if (!hasTranslation) {
+    // If no translation occurred, return the message
+    if (translatedText === originalText) {
       return 'Everything looks good to me!';
     }
 
