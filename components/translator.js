@@ -19,7 +19,6 @@ class Translator {
     // Helper function to translate based on dictionary and wrap with <span> tags
     const translateByDictionary = (str, dictionary) => {
       for (const [usWord, ukWord] of Object.entries(dictionary)) {
-        // const regex = new RegExp(`\\b${usWord}\\b`, "gi")
         // Ensure it handles periods correctly
         const regex = new RegExp(`\\b${usWord.replace('.', '\\.')}(?=\\b|\\s|$)`, 'gi');
         str = str.replace(regex, (match) => {

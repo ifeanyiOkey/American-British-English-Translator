@@ -9,7 +9,7 @@ module.exports = function (app) {
   app.route('/api/translate')
     .post((req, res) => {
       const { text, locale } = req.body;
-      // console.log(req.body);
+      console.log(req.body);
       
       if (Object.hasOwn(req.body, 'text') && Object.hasOwn(req.body, 'locale')) {
         if (!text) return res.json({ error: 'No text to translate' });
