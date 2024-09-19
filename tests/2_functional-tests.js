@@ -80,4 +80,22 @@ suite('Functional Tests', () => {
         done();
       });
   });
+  test('Translation with text that needs no translation', (done) => {
+    chai
+      .request(server)
+      .keepOpen()
+      .post('/api/translate')
+      .send({
+        text: 'The parking lot was full.',
+        locale: 'british-to-american'
+      })
+      .end((err, res) => {
+        assert.equal(res.status, 200);
+        assert.equal(
+          res.body.translation,
+          'Everything looks good to me!'
+        )
+        done();
+      });
+  });
 });
