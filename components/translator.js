@@ -4,6 +4,13 @@ const americanToBritishTitles = require("./american-to-british-titles.js");
 const britishOnly = require("./british-only.js");
 
 class Translator {
+  // Function to reverse the American-to-British spellings and titles mapping
+  getBritishToAmerican(dictionary) {
+    return Object.fromEntries(
+      Object.entries(dictionary).map(([us, uk]) => [uk, us])
+    );
+  }
+  
   // Choose the correct dictionary based on locale
   translate(text, locale) {
     let translatedText = text;
@@ -12,7 +19,9 @@ class Translator {
     // Helper function to translate based on dictionary and wrap with <span> tags
     const translateByDictionary = (str, dictionary) => {
       for (const [usWord, ukWord] of Object.entries(dictionary)) {
-        const regex = new RegExp(`\\b${usWord}\\b`, "gi");
+        // const regex = new RegExp(`\\b${usWord}\\b`, "gi")
+        // Ensure it handles periods correctly
+        const regex = new RegExp(`\\b${usWord.replace('.', '\\.')}(?=\\b|\\s|$)`, 'gi');
         str = str.replace(regex, (match) => {
           // Preserve original casing (title case, all caps, etc.)
           const translatedWord =
@@ -56,23 +65,23 @@ class Translator {
         translatedText,
         americanToBritishTitles
       );
-      translatedText = translateTime(translatedText, locale)
+      translatedText = translateTime(translatedText, locale);
     } else if (locale === "british-to-american") {
       translatedText = translateByDictionary(translatedText, britishOnly);
       // Use the reverseDictionary function to reverse spellings and titles
-      const britishToAmericanSpelling = this.reverseDictionary(
+      const britishToAmericanSpelling = this.getBritishToAmerican(
         americanToBritishSpelling
       );
       translatedText = translateByDictionary(
         translatedText,
         britishToAmericanSpelling
       );
-      const britishToAmericanTitles = this.reverseDictionary(
+      const britishToAmericanTitle = this.getBritishToAmerican(
         americanToBritishTitles
       );
       translatedText = translateByDictionary(
         translatedText,
-        britishToAmericanTitles
+        britishToAmericanTitle
       );
       translatedText = translateTime(translatedText, locale);
     }
@@ -82,13 +91,6 @@ class Translator {
     }
 
     return translatedText;
-  }
-
-  // Reverses the key-value pairs of an object
-  reverseDictionary(dictionary) {
-    return Object.fromEntries(
-      Object.entries(dictionary).map(([key, value]) => [value, key])
-    );
   }
 }
 
